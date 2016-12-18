@@ -1,15 +1,14 @@
-.board {
-  display: flex;                       /* establish flex container */
-  flex-wrap: wrap;                     /* enable flex items to wrap */
-  justify-content: flex-start;
-}
+
 .space {
-  flex: 0 0 32%;                        /*don't grow, don't shrink, width */
+  float: left;
   height: 100px;
   width: 100px;
   margin: 5px;
-  background-color: #999;
+  background-color: #EEEEEE;
 }
-.space:nth-child(3n) {
-  background-color: #F00;
+.space:nth-child(4) {
+  clear: left;
+}
+.space:nth-child(7) {
+  clear: left;
 }
