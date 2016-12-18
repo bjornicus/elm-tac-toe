@@ -1,0 +1,15 @@
+.board {
+  display: flex;                       /* establish flex container */
+  flex-wrap: wrap;                     /* enable flex items to wrap */
+  justify-content: flex-start;
+}
+.space {
+  flex: 0 0 32%;                        /*don't grow, don't shrink, width */
+  height: 100px;
+  width: 100px;
+  margin: 5px;
+  background-color: #999;
+}
+.space:nth-child(3n) {
+  background-color: #F00;
+}
