@@ -9,10 +9,12 @@ import Html.Attributes exposing (style, class)
 import Array exposing (Array)
 
 
+main : Program Never { next : SquareState, spaces : Array SquareState } Msg
 main =
     beginnerProgram { model = { next = X, spaces = Array.repeat 9 Empty }, view = view, update = update }
 
 
+squareStateToString : SquareState -> String
 squareStateToString state =
     case state of
         X ->
@@ -25,6 +27,7 @@ squareStateToString state =
             ""
 
 
+squareElement : Int -> SquareState -> Html.Html Msg
 squareElement index squareState =
     div
         [ onClick (Play index)
@@ -33,10 +36,12 @@ squareElement index squareState =
         [ text <| squareStateToString squareState ]
 
 
+row : Array SquareState -> List (Html.Html Msg)
 row squares =
     Array.toList <| Array.indexedMap squareElement squares
 
 
+view : { a | spaces : Array SquareState } -> Html.Html Msg
 view model =
     div [ class "board" ] <| row model.spaces
 
@@ -57,6 +62,7 @@ type Msg
     = Play Int
 
 
+nextPlay : SquareState -> SquareState
 nextPlay currentPlay =
     case currentPlay of
         X ->
@@ -66,6 +72,10 @@ nextPlay currentPlay =
             X
 
 
+update :
+    Msg
+    -> { a | spaces : Array SquareState, next : SquareState }
+    -> { a | next : SquareState, spaces : Array SquareState }
 update msg model =
     case msg of
         Play index ->
