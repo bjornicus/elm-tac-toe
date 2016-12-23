@@ -11,13 +11,46 @@
 <body>
     <div id="my-app"></div>
 </body>
-<!-- Fonts and external JS and styles are available -->
-<!-- Your source after making -->
+
 <script type="text/javascript" src="main.js"></script>
-<!-- Removes splash and starts elm app. -->
+
+<!-- Firebase interop -->
+    <script src="https://www.gstatic.com/firebasejs/3.6.3/firebase.js"></script>
+<!-- TODO use just the firebase stuff we need
+<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase-messaging.js"></script> 
+<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase-storage.js"></script>  
+-->
 <script type="text/javascript">
     var node = document.getElementById('my-app');
     var app = Elm.Main.embed(node);
+
+    var config = {
+        apiKey: "AIzaSyBV759VcruZzA0hsp6z4r_qgiwaVaFxUfM",
+        authDomain: "trajectory-c124d.firebaseapp.com",
+        databaseURL: "https://trajectory-c124d.firebaseio.com",
+        storageBucket: "trajectory-c124d.appspot.com",
+        messagingSenderId: "487957718166"
+    };
+    firebase.initializeApp(config);
+    firebase.auth().signInAnonymously().catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        errors.innerText = errorMessage;
+        // ...
+    });
+    
+    var database = firebase.database();
+    contentRef = database.ref('scratch').child('abcd');
+
+    app.ports.updateData.subscribe(function(data) {
+        contentRef.set(data);
+    });
+    // contentRef.on('value', s => app.ports.newModel.send(s.val()));
+
 </script>
 
 </html>

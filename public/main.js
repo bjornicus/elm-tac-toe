@@ -8263,48 +8263,11 @@ var _user$project$Types$Model = F2(
 var _user$project$Types$Empty = {ctor: 'Empty'};
 var _user$project$Types$O = {ctor: 'O'};
 var _user$project$Types$X = {ctor: 'X'};
+var _user$project$Types$Persist = {ctor: 'Persist'};
 var _user$project$Types$Reset = {ctor: 'Reset'};
 var _user$project$Types$Play = function (a) {
 	return {ctor: 'Play', _0: a};
 };
-
-var _user$project$State$nextPlay = function (currentPlay) {
-	var _p0 = currentPlay;
-	if (_p0.ctor === 'X') {
-		return _user$project$Types$O;
-	} else {
-		return _user$project$Types$X;
-	}
-};
-var _user$project$State$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$State$initialize = {
-	ctor: '_Tuple2',
-	_0: {
-		next: _user$project$Types$X,
-		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
-	},
-	_1: _elm_lang$core$Platform_Cmd$none
-};
-var _user$project$State$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		if (_p1.ctor === 'Play') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
-						next: _user$project$State$nextPlay(model.next)
-					}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return _user$project$State$initialize;
-		}
-	});
 
 var _user$project$View$squareStateToString = function (state) {
 	var _p0 = state;
@@ -8374,6 +8337,77 @@ var _user$project$View$view = function (model) {
 			}
 		});
 };
+
+var _user$project$Persistence$updateData = _elm_lang$core$Native_Platform.outgoingPort(
+	'updateData',
+	function (v) {
+		return {
+			next: v.next,
+			spaces: _elm_lang$core$Native_Array.toJSArray(v.spaces).map(
+				function (v) {
+					return v;
+				})
+		};
+	});
+var _user$project$Persistence$PortModel = F2(
+	function (a, b) {
+		return {next: a, spaces: b};
+	});
+var _user$project$Persistence$save = function (model) {
+	return _user$project$Persistence$updateData(
+		A2(
+			_user$project$Persistence$PortModel,
+			_user$project$View$squareStateToString(model.next),
+			A2(_elm_lang$core$Array$map, _user$project$View$squareStateToString, model.spaces)));
+};
+
+var _user$project$State$nextPlay = function (currentPlay) {
+	var _p0 = currentPlay;
+	if (_p0.ctor === 'X') {
+		return _user$project$Types$O;
+	} else {
+		return _user$project$Types$X;
+	}
+};
+var _user$project$State$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$State$initialize = function () {
+	var model = {
+		next: _user$project$Types$X,
+		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
+	};
+	return {
+		ctor: '_Tuple2',
+		_0: model,
+		_1: _user$project$Persistence$save(model)
+	};
+}();
+var _user$project$State$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'Persist':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Persistence$save(model)
+				};
+			case 'Play':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
+							next: _user$project$State$nextPlay(model.next)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return _user$project$State$initialize;
+		}
+	});
 
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$State$initialize, update: _user$project$State$update, subscriptions: _user$project$State$subscriptions, view: _user$project$View$view})();

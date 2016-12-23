@@ -1,4 +1,4 @@
-module View exposing (view)
+module View exposing (view, squareStateToString)
 
 import Html exposing (beginnerProgram, div, button, text, br)
 import Html.Events exposing (onClick)
