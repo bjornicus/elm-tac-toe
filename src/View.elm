@@ -36,4 +36,7 @@ row squares =
 
 view : { a | spaces : Array SquareState } -> Html.Html Msg
 view model =
-    div [ class "board" ] <| row model.spaces
+    div []
+        [ div [ class "board" ] <| row model.spaces
+        , button [ onClick (Reset) ] [ text "reset" ]
+        ]

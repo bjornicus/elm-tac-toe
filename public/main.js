@@ -8263,6 +8263,7 @@ var _user$project$Types$Model = F2(
 var _user$project$Types$Empty = {ctor: 'Empty'};
 var _user$project$Types$O = {ctor: 'O'};
 var _user$project$Types$X = {ctor: 'X'};
+var _user$project$Types$Reset = {ctor: 'Reset'};
 var _user$project$Types$Play = function (a) {
 	return {ctor: 'Play', _0: a};
 };
@@ -8275,20 +8276,6 @@ var _user$project$State$nextPlay = function (currentPlay) {
 		return _user$project$Types$X;
 	}
 };
-var _user$project$State$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
-					next: _user$project$State$nextPlay(model.next)
-				}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
 var _user$project$State$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -8300,6 +8287,24 @@ var _user$project$State$initialize = {
 	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
+var _user$project$State$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		if (_p1.ctor === 'Play') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
+						next: _user$project$State$nextPlay(model.next)
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			return _user$project$State$initialize;
+		}
+	});
 
 var _user$project$View$squareStateToString = function (state) {
 	var _p0 = state;
@@ -8340,12 +8345,34 @@ var _user$project$View$row = function (squares) {
 var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
+		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('board'),
-			_1: {ctor: '[]'}
-		},
-		_user$project$View$row(model.spaces));
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('board'),
+					_1: {ctor: '[]'}
+				},
+				_user$project$View$row(model.spaces)),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Reset),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('reset'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 
 var _user$project$Main$main = _elm_lang$html$Html$program(

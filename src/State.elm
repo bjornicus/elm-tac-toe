@@ -31,3 +31,6 @@ update msg model =
             ( { model | spaces = Array.set index model.next model.spaces, next = nextPlay model.next }
             , Cmd.none
             )
+
+        Reset ->
+            initialize
