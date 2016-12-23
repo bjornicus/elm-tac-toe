@@ -8263,7 +8263,6 @@ var _user$project$Types$Model = F2(
 var _user$project$Types$Empty = {ctor: 'Empty'};
 var _user$project$Types$O = {ctor: 'O'};
 var _user$project$Types$X = {ctor: 'X'};
-var _user$project$Types$Persist = {ctor: 'Persist'};
 var _user$project$Types$Reset = {ctor: 'Reset'};
 var _user$project$Types$Play = function (a) {
 	return {ctor: 'Play', _0: a};
@@ -8372,40 +8371,31 @@ var _user$project$State$nextPlay = function (currentPlay) {
 var _user$project$State$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$State$initialize = function () {
-	var model = {
-		next: _user$project$Types$X,
-		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
-	};
+var _user$project$State$persist = function (model) {
 	return {
 		ctor: '_Tuple2',
 		_0: model,
 		_1: _user$project$Persistence$save(model)
 	};
-}();
+};
+var _user$project$State$initialize = _user$project$State$persist(
+	{
+		next: _user$project$Types$X,
+		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
+	});
 var _user$project$State$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'Persist':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Persistence$save(model)
-				};
-			case 'Play':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
-							next: _user$project$State$nextPlay(model.next)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return _user$project$State$initialize;
+		if (_p1.ctor === 'Play') {
+			return _user$project$State$persist(
+				_elm_lang$core$Native_Utils.update(
+					model,
+					{
+						spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
+						next: _user$project$State$nextPlay(model.next)
+					}));
+		} else {
+			return _user$project$State$initialize;
 		}
 	});
 

@@ -2,16 +2,17 @@ module State exposing (update, initialize, subscriptions)
 
 import Array exposing (Array)
 import Types exposing (..)
-import Persistence exposing (save)
+import Persistence
+
+
+persist : Model -> ( Model, Cmd msg )
+persist model =
+    ( model, Persistence.save model )
 
 
 initialize : ( Model, Cmd msg )
 initialize =
-    let
-        model =
-            { next = X, spaces = Array.repeat 9 Empty }
-    in
-        ( model, save model )
+    persist { next = X, spaces = Array.repeat 9 Empty }
 
 
 subscriptions : Model -> Sub Msg
@@ -32,13 +33,8 @@ nextPlay currentPlay =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Persist ->
-            ( model, save model )
-
         Play index ->
-            ( { model | spaces = Array.set index model.next model.spaces, next = nextPlay model.next }
-            , Cmd.none
-            )
+            persist { model | spaces = Array.set index model.next model.spaces, next = nextPlay model.next }
 
         Reset ->
             initialize
