@@ -8256,7 +8256,52 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Main$squareStateToString = function (state) {
+var _user$project$Types$Model = F2(
+	function (a, b) {
+		return {next: a, spaces: b};
+	});
+var _user$project$Types$Empty = {ctor: 'Empty'};
+var _user$project$Types$O = {ctor: 'O'};
+var _user$project$Types$X = {ctor: 'X'};
+var _user$project$Types$Play = function (a) {
+	return {ctor: 'Play', _0: a};
+};
+
+var _user$project$State$nextPlay = function (currentPlay) {
+	var _p0 = currentPlay;
+	if (_p0.ctor === 'X') {
+		return _user$project$Types$O;
+	} else {
+		return _user$project$Types$X;
+	}
+};
+var _user$project$State$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
+					next: _user$project$State$nextPlay(model.next)
+				}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$State$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$State$initialize = {
+	ctor: '_Tuple2',
+	_0: {
+		next: _user$project$Types$X,
+		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
+	},
+	_1: _elm_lang$core$Platform_Cmd$none
+};
+
+var _user$project$View$squareStateToString = function (state) {
 	var _p0 = state;
 	switch (_p0.ctor) {
 		case 'X':
@@ -8267,42 +8312,14 @@ var _user$project$Main$squareStateToString = function (state) {
 			return '';
 	}
 };
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {next: a, spaces: b};
-	});
-var _user$project$Main$Empty = {ctor: 'Empty'};
-var _user$project$Main$O = {ctor: 'O'};
-var _user$project$Main$X = {ctor: 'X'};
-var _user$project$Main$nextPlay = function (currentPlay) {
-	var _p1 = currentPlay;
-	if (_p1.ctor === 'X') {
-		return _user$project$Main$O;
-	} else {
-		return _user$project$Main$X;
-	}
-};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p2 = msg;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				spaces: A3(_elm_lang$core$Array$set, _p2._0, model.next, model.spaces),
-				next: _user$project$Main$nextPlay(model.next)
-			});
-	});
-var _user$project$Main$Play = function (a) {
-	return {ctor: 'Play', _0: a};
-};
-var _user$project$Main$squareElement = F2(
+var _user$project$View$squareElement = F2(
 	function (index, squareState) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Main$Play(index)),
+					_user$project$Types$Play(index)),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('space'),
@@ -8312,15 +8329,15 @@ var _user$project$Main$squareElement = F2(
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html$text(
-					_user$project$Main$squareStateToString(squareState)),
+					_user$project$View$squareStateToString(squareState)),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Main$row = function (squares) {
+var _user$project$View$row = function (squares) {
 	return _elm_lang$core$Array$toList(
-		A2(_elm_lang$core$Array$indexedMap, _user$project$Main$squareElement, squares));
+		A2(_elm_lang$core$Array$indexedMap, _user$project$View$squareElement, squares));
 };
-var _user$project$Main$view = function (model) {
+var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -8328,22 +8345,24 @@ var _user$project$Main$view = function (model) {
 			_0: _elm_lang$html$Html_Attributes$class('board'),
 			_1: {ctor: '[]'}
 		},
-		_user$project$Main$row(model.spaces));
+		_user$project$View$row(model.spaces));
 };
-var _user$project$Main$main = _elm_lang$html$Html$beginnerProgram(
-	{
-		model: {
-			next: _user$project$Main$X,
-			spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Main$Empty)
-		},
-		view: _user$project$Main$view,
-		update: _user$project$Main$update
-	})();
+
+var _user$project$Main$main = _elm_lang$html$Html$program(
+	{init: _user$project$State$initialize, update: _user$project$State$update, subscriptions: _user$project$State$subscriptions, view: _user$project$View$view})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
     _user$project$Main$main(Elm['Main'], 'Main', undefined);
+}
+Elm['State'] = Elm['State'] || {};
+if (typeof _user$project$State$main !== 'undefined') {
+    _user$project$State$main(Elm['State'], 'State', undefined);
+}
+Elm['View'] = Elm['View'] || {};
+if (typeof _user$project$View$main !== 'undefined') {
+    _user$project$View$main(Elm['View'], 'View', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
