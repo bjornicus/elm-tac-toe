@@ -1,8 +1,17 @@
-port module Persistence exposing (save)
+port module Persistence exposing (save, newModelSubscription)
 
 import Array exposing (Array)
-import Types exposing (Model)
-import View exposing (squareStateToString)
+import Types exposing (..)
+
+
+save : Model -> Cmd msg
+save model =
+    updateData <| PortModel (squareStateToString model.next) (Array.map squareStateToString model.spaces)
+
+
+newModelSubscription : Sub Msg
+newModelSubscription =
+    newModel toUpdateCommand
 
 
 type alias PortModel =
@@ -11,16 +20,17 @@ type alias PortModel =
     }
 
 
-save : Model -> Cmd msg
-save model =
-    updateData <| PortModel (squareStateToString model.next) (Array.map squareStateToString model.spaces)
-
-
 port updateData : PortModel -> Cmd msg
 
 
+port newModel : (PortModel -> msg) -> Sub msg
 
---port newValue : (String -> msg) -> Sub msg
---subscriptions : Model -> Sub Msg
---subscriptions model =
---    newValue Suggest
+
+toUpdateCommand : PortModel -> msg
+toUpdateCommand portModel =
+    Update
+
+
+toModel : PortModel -> Model
+toModel portModel =
+    Model (squareStateFromString portModel.next) (Array.map squareStateFromString portModel.spaces)

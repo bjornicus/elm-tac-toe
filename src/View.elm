@@ -1,23 +1,10 @@
-module View exposing (view, squareStateToString)
+module View exposing (view)
 
 import Html exposing (beginnerProgram, div, button, text, br)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (style, class)
 import Array exposing (Array)
 import Types exposing (..)
-
-
-squareStateToString : SquareState -> String
-squareStateToString state =
-    case state of
-        X ->
-            "X"
-
-        O ->
-            "O"
-
-        Empty ->
-            ""
 
 
 squareElement : Int -> SquareState -> Html.Html Msg

@@ -17,7 +17,7 @@ initialize =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Persistence.newModelSubscription
 
 
 nextPlay : SquareState -> SquareState
@@ -35,6 +35,9 @@ update msg model =
     case msg of
         Play index ->
             persist { model | spaces = Array.set index model.next model.spaces, next = nextPlay model.next }
+
+        Update model ->
+            ( model, Cmd.none )
 
         Reset ->
             initialize
