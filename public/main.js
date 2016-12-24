@@ -8354,6 +8354,14 @@ var _user$project$State$nextPlay = function (currentPlay) {
 var _user$project$State$subscriptions = function (model) {
 	return _user$project$Persistence$onNewModel(_user$project$Types$Update);
 };
+var _user$project$State$initialize = {
+	ctor: '_Tuple2',
+	_0: {
+		next: _user$project$Types$X,
+		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
+	},
+	_1: _elm_lang$core$Platform_Cmd$none
+};
 var _user$project$State$persist = function (model) {
 	return {
 		ctor: '_Tuple2',
@@ -8361,11 +8369,6 @@ var _user$project$State$persist = function (model) {
 		_1: _user$project$Persistence$save(model)
 	};
 };
-var _user$project$State$initialize = _user$project$State$persist(
-	{
-		next: _user$project$Types$X,
-		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
-	});
 var _user$project$State$update = F2(
 	function (msg, model) {
 		var _p1 = msg;

@@ -16,7 +16,7 @@ persist model =
 
 initialize : ( Model, Cmd msg )
 initialize =
-    persist { next = X, spaces = Array.repeat 9 Empty }
+    ( { next = X, spaces = Array.repeat 9 Empty }, Cmd.none )
 
 
 
