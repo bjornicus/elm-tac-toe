@@ -10,14 +10,26 @@ persist model =
     ( model, Persistence.save model )
 
 
+
+--INITIALIZE
+
+
 initialize : ( Model, Cmd msg )
 initialize =
     persist { next = X, spaces = Array.repeat 9 Empty }
 
 
+
+--SUBSCRIPTIONS
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Persistence.onNewModel Update
+
+
+
+--UPDATE
 
 
 nextPlay : SquareState -> SquareState
@@ -35,6 +47,9 @@ update msg model =
     case msg of
         Play index ->
             persist { model | spaces = Array.set index model.next model.spaces, next = nextPlay model.next }
+
+        Update newModel ->
+            ( Persistence.toModel newModel, Cmd.none )
 
         Reset ->
             initialize

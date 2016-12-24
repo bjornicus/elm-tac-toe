@@ -8256,19 +8256,7 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Types$Model = F2(
-	function (a, b) {
-		return {next: a, spaces: b};
-	});
-var _user$project$Types$Empty = {ctor: 'Empty'};
-var _user$project$Types$O = {ctor: 'O'};
-var _user$project$Types$X = {ctor: 'X'};
-var _user$project$Types$Reset = {ctor: 'Reset'};
-var _user$project$Types$Play = function (a) {
-	return {ctor: 'Play', _0: a};
-};
-
-var _user$project$View$squareStateToString = function (state) {
+var _user$project$Types$squareStateToString = function (state) {
 	var _p0 = state;
 	switch (_p0.ctor) {
 		case 'X':
@@ -8279,6 +8267,128 @@ var _user$project$View$squareStateToString = function (state) {
 			return '';
 	}
 };
+var _user$project$Types$Model = F2(
+	function (a, b) {
+		return {next: a, spaces: b};
+	});
+var _user$project$Types$PortModel = F2(
+	function (a, b) {
+		return {next: a, spaces: b};
+	});
+var _user$project$Types$Empty = {ctor: 'Empty'};
+var _user$project$Types$O = {ctor: 'O'};
+var _user$project$Types$X = {ctor: 'X'};
+var _user$project$Types$squareStateFromString = function (state) {
+	var _p1 = state;
+	switch (_p1) {
+		case 'X':
+			return _user$project$Types$X;
+		case 'O':
+			return _user$project$Types$O;
+		default:
+			return _user$project$Types$Empty;
+	}
+};
+var _user$project$Types$Reset = {ctor: 'Reset'};
+var _user$project$Types$Update = function (a) {
+	return {ctor: 'Update', _0: a};
+};
+var _user$project$Types$Play = function (a) {
+	return {ctor: 'Play', _0: a};
+};
+
+var _user$project$Persistence$fromModel = function (model) {
+	return A2(
+		_user$project$Types$PortModel,
+		_user$project$Types$squareStateToString(model.next),
+		A2(_elm_lang$core$Array$map, _user$project$Types$squareStateToString, model.spaces));
+};
+var _user$project$Persistence$toModel = function (portModel) {
+	return A2(
+		_user$project$Types$Model,
+		_user$project$Types$squareStateFromString(portModel.next),
+		A2(_elm_lang$core$Array$map, _user$project$Types$squareStateFromString, portModel.spaces));
+};
+var _user$project$Persistence$updateData = _elm_lang$core$Native_Platform.outgoingPort(
+	'updateData',
+	function (v) {
+		return {
+			next: v.next,
+			spaces: _elm_lang$core$Native_Array.toJSArray(v.spaces).map(
+				function (v) {
+					return v;
+				})
+		};
+	});
+var _user$project$Persistence$save = function (model) {
+	return _user$project$Persistence$updateData(
+		_user$project$Persistence$fromModel(model));
+};
+var _user$project$Persistence$newModel = _elm_lang$core$Native_Platform.incomingPort(
+	'newModel',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (next) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (spaces) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{next: next, spaces: spaces});
+				},
+				A2(
+					_elm_lang$core$Json_Decode$field,
+					'spaces',
+					_elm_lang$core$Json_Decode$array(_elm_lang$core$Json_Decode$string)));
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'next', _elm_lang$core$Json_Decode$string)));
+var _user$project$Persistence$onNewModel = _user$project$Persistence$newModel;
+
+var _user$project$State$nextPlay = function (currentPlay) {
+	var _p0 = currentPlay;
+	if (_p0.ctor === 'X') {
+		return _user$project$Types$O;
+	} else {
+		return _user$project$Types$X;
+	}
+};
+var _user$project$State$subscriptions = function (model) {
+	return _user$project$Persistence$onNewModel(_user$project$Types$Update);
+};
+var _user$project$State$persist = function (model) {
+	return {
+		ctor: '_Tuple2',
+		_0: model,
+		_1: _user$project$Persistence$save(model)
+	};
+};
+var _user$project$State$initialize = _user$project$State$persist(
+	{
+		next: _user$project$Types$X,
+		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
+	});
+var _user$project$State$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'Play':
+				return _user$project$State$persist(
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
+							next: _user$project$State$nextPlay(model.next)
+						}));
+			case 'Update':
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Persistence$toModel(_p1._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return _user$project$State$initialize;
+		}
+	});
+
 var _user$project$View$squareElement = F2(
 	function (index, squareState) {
 		return A2(
@@ -8296,7 +8406,7 @@ var _user$project$View$squareElement = F2(
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html$text(
-					_user$project$View$squareStateToString(squareState)),
+					_user$project$Types$squareStateToString(squareState)),
 				_1: {ctor: '[]'}
 			});
 	});
@@ -8336,68 +8446,6 @@ var _user$project$View$view = function (model) {
 			}
 		});
 };
-
-var _user$project$Persistence$updateData = _elm_lang$core$Native_Platform.outgoingPort(
-	'updateData',
-	function (v) {
-		return {
-			next: v.next,
-			spaces: _elm_lang$core$Native_Array.toJSArray(v.spaces).map(
-				function (v) {
-					return v;
-				})
-		};
-	});
-var _user$project$Persistence$PortModel = F2(
-	function (a, b) {
-		return {next: a, spaces: b};
-	});
-var _user$project$Persistence$save = function (model) {
-	return _user$project$Persistence$updateData(
-		A2(
-			_user$project$Persistence$PortModel,
-			_user$project$View$squareStateToString(model.next),
-			A2(_elm_lang$core$Array$map, _user$project$View$squareStateToString, model.spaces)));
-};
-
-var _user$project$State$nextPlay = function (currentPlay) {
-	var _p0 = currentPlay;
-	if (_p0.ctor === 'X') {
-		return _user$project$Types$O;
-	} else {
-		return _user$project$Types$X;
-	}
-};
-var _user$project$State$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$State$persist = function (model) {
-	return {
-		ctor: '_Tuple2',
-		_0: model,
-		_1: _user$project$Persistence$save(model)
-	};
-};
-var _user$project$State$initialize = _user$project$State$persist(
-	{
-		next: _user$project$Types$X,
-		spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
-	});
-var _user$project$State$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		if (_p1.ctor === 'Play') {
-			return _user$project$State$persist(
-				_elm_lang$core$Native_Utils.update(
-					model,
-					{
-						spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
-						next: _user$project$State$nextPlay(model.next)
-					}));
-		} else {
-			return _user$project$State$initialize;
-		}
-	});
 
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$State$initialize, update: _user$project$State$update, subscriptions: _user$project$State$subscriptions, view: _user$project$View$view})();

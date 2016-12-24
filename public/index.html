@@ -49,7 +49,7 @@
     app.ports.updateData.subscribe(function(data) {
         contentRef.set(data);
     });
-    // contentRef.on('value', s => app.ports.newModel.send(s.val()));
+    contentRef.on('value', s => app.ports.newModel.send(s.val()));
 
 </script>
 
