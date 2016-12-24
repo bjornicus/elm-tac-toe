@@ -14,9 +14,14 @@ persist model =
 --INITIALIZE
 
 
+emptyBoard : Model
+emptyBoard =
+    { next = X, spaces = Array.repeat 9 Empty }
+
+
 initialize : ( Model, Cmd msg )
 initialize =
-    ( { next = X, spaces = Array.repeat 9 Empty }, Cmd.none )
+    ( emptyBoard, Cmd.none )
 
 
 
@@ -52,4 +57,4 @@ update msg model =
             ( Persistence.toModel newModel, Cmd.none )
 
         Reset ->
-            initialize
+            persist emptyBoard
