@@ -8264,9 +8264,9 @@ var _user$project$Types$PortableGameState = F2(
 	function (a, b) {
 		return {next: a, spaces: b};
 	});
-var _user$project$Types$Model = F2(
-	function (a, b) {
-		return {currentGameState: a, history: b};
+var _user$project$Types$Model = F3(
+	function (a, b, c) {
+		return {roomCode: a, currentGameState: b, history: c};
 	});
 var _user$project$Types$PortableModel = F2(
 	function (a, b) {
@@ -8275,6 +8275,10 @@ var _user$project$Types$PortableModel = F2(
 var _user$project$Types$Empty = {ctor: 'Empty'};
 var _user$project$Types$O = {ctor: 'O'};
 var _user$project$Types$X = {ctor: 'X'};
+var _user$project$Types$JoinGame = {ctor: 'JoinGame'};
+var _user$project$Types$RoomCode = function (a) {
+	return {ctor: 'RoomCode', _0: a};
+};
 var _user$project$Types$Undo = {ctor: 'Undo'};
 var _user$project$Types$Reset = {ctor: 'Reset'};
 var _user$project$Types$Update = function (a) {
@@ -8325,12 +8329,18 @@ var _user$project$Converters$fromModel = function (model) {
 		A2(_elm_lang$core$List$map, _user$project$Converters$toPortableGameState, model.history));
 };
 var _user$project$Converters$toModel = function (portableModel) {
-	return A2(
+	return A3(
 		_user$project$Types$Model,
+		'',
 		_user$project$Converters$toGameState(portableModel.currentGameState),
 		A2(_elm_lang$core$List$map, _user$project$Converters$toGameState, portableModel.history));
 };
 
+var _user$project$Persistence$joinGame = _elm_lang$core$Native_Platform.outgoingPort(
+	'joinGame',
+	function (v) {
+		return v;
+	});
 var _user$project$Persistence$updateData = _elm_lang$core$Native_Platform.outgoingPort(
 	'updateData',
 	function (v) {
@@ -8448,6 +8458,7 @@ var _user$project$State$emptyBoard = {
 	spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
 };
 var _user$project$State$initialModel = {
+	roomCode: '',
 	currentGameState: _user$project$State$emptyBoard,
 	history: {ctor: '[]'}
 };
@@ -8493,7 +8504,7 @@ var _user$project$State$update = F2(
 				};
 			case 'Reset':
 				return _user$project$State$persist(_user$project$State$initialModel);
-			default:
+			case 'Undo':
 				return _user$project$State$persist(
 					_elm_lang$core$Native_Utils.update(
 						model,
@@ -8501,6 +8512,16 @@ var _user$project$State$update = F2(
 							currentGameState: _user$project$State$previousState(model.history),
 							history: _user$project$State$previousHistory(model.history)
 						}));
+			case 'RoomCode':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{roomCode: _p4._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 
@@ -8536,42 +8557,72 @@ var _user$project$View$view = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$div,
+				_elm_lang$html$Html$input,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('board'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$placeholder('Game Code'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Types$RoomCode),
+						_1: {ctor: '[]'}
+					}
 				},
-				_user$project$View$row(model.currentGameState.spaces)),
+				{ctor: '[]'}),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$button,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Reset),
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$JoinGame),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('reset'),
+						_0: _elm_lang$html$Html$text('Join'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$button,
+						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Undo),
+							_0: _elm_lang$html$Html_Attributes$class('board'),
 							_1: {ctor: '[]'}
 						},
-						{
+						_user$project$View$row(model.currentGameState.spaces)),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Reset),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('reset'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('undo'),
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Undo),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('undo'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
 		});

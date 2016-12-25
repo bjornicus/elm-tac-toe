@@ -1,8 +1,8 @@
 module View exposing (view)
 
-import Html exposing (beginnerProgram, div, button, text, br)
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (style, class)
+import Html exposing (beginnerProgram, div, button, text, br, input)
+import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (style, class, placeholder)
 import Array exposing (Array)
 import Types exposing (..)
 import Converters exposing (squareStateToString)
@@ -25,7 +25,9 @@ row squares =
 view : Model -> Html.Html Msg
 view model =
     div []
-        [ div [ class "board" ] <| row model.currentGameState.spaces
+        [ input [ placeholder "Game Code", onInput (RoomCode) ] []
+        , button [ onClick (JoinGame) ] [ text "Join" ]
+        , div [ class "board" ] <| row model.currentGameState.spaces
         , button [ onClick (Reset) ] [ text "reset" ]
         , button [ onClick (Undo) ] [ text "undo" ]
         ]

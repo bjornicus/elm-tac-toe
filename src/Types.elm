@@ -22,7 +22,8 @@ type alias PortableGameState =
 
 
 type alias Model =
-    { currentGameState : GameState
+    { roomCode : String
+    , currentGameState : GameState
     , history : List GameState
     }
 
@@ -38,3 +39,5 @@ type Msg
     | Update PortableModel
     | Reset
     | Undo
+    | RoomCode String
+    | JoinGame

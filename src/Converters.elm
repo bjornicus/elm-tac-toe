@@ -6,7 +6,7 @@ import Array exposing (Array)
 
 toModel : PortableModel -> Model
 toModel portableModel =
-    Model (toGameState portableModel.currentGameState) (List.map toGameState portableModel.history)
+    Model "" (toGameState portableModel.currentGameState) (List.map toGameState portableModel.history)
 
 
 fromModel : Model -> PortableModel

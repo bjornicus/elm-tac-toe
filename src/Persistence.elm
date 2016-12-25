@@ -14,6 +14,9 @@ onNewModel =
     newModel
 
 
+port joinGame : String -> Cmd msg
+
+
 port updateData : PortableModel -> Cmd msg
 
 

@@ -22,7 +22,7 @@ emptyBoard =
 
 initialModel : Model
 initialModel =
-    { currentGameState = emptyBoard, history = [] }
+    { roomCode = "", currentGameState = emptyBoard, history = [] }
 
 
 initialize : ( Model, Cmd msg )
@@ -118,3 +118,9 @@ update msg model =
                     | currentGameState = previousState model.history
                     , history = previousHistory model.history
                 }
+
+        RoomCode code ->
+            ( { model | roomCode = code }, Cmd.none )
+
+        JoinGame ->
+            ( model, Cmd.none )
