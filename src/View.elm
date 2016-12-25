@@ -5,6 +5,7 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (style, class)
 import Array exposing (Array)
 import Types exposing (..)
+import Converters exposing (squareStateToString)
 
 
 squareElement : Int -> SquareState -> Html.Html Msg
@@ -21,9 +22,9 @@ row squares =
     Array.toList <| Array.indexedMap squareElement squares
 
 
-view : { a | spaces : Array SquareState } -> Html.Html Msg
+view : Model -> Html.Html Msg
 view model =
     div []
-        [ div [ class "board" ] <| row model.spaces
+        [ div [ class "board" ] <| row model.currentGameState.spaces
         , button [ onClick (Reset) ] [ text "reset" ]
         ]

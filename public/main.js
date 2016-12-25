@@ -8256,39 +8256,25 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Types$squareStateToString = function (state) {
-	var _p0 = state;
-	switch (_p0.ctor) {
-		case 'X':
-			return 'X';
-		case 'O':
-			return 'O';
-		default:
-			return '';
-	}
-};
-var _user$project$Types$Model = F2(
+var _user$project$Types$GameState = F2(
 	function (a, b) {
 		return {next: a, spaces: b};
 	});
-var _user$project$Types$PortModel = F2(
+var _user$project$Types$PortableGameState = F2(
 	function (a, b) {
 		return {next: a, spaces: b};
+	});
+var _user$project$Types$Model = F2(
+	function (a, b) {
+		return {currentGameState: a, history: b};
+	});
+var _user$project$Types$PortableModel = F2(
+	function (a, b) {
+		return {currentGameState: a, history: b};
 	});
 var _user$project$Types$Empty = {ctor: 'Empty'};
 var _user$project$Types$O = {ctor: 'O'};
 var _user$project$Types$X = {ctor: 'X'};
-var _user$project$Types$squareStateFromString = function (state) {
-	var _p1 = state;
-	switch (_p1) {
-		case 'X':
-			return _user$project$Types$X;
-		case 'O':
-			return _user$project$Types$O;
-		default:
-			return _user$project$Types$Empty;
-	}
-};
 var _user$project$Types$Reset = {ctor: 'Reset'};
 var _user$project$Types$Update = function (a) {
 	return {ctor: 'Update', _0: a};
@@ -8297,50 +8283,129 @@ var _user$project$Types$Play = function (a) {
 	return {ctor: 'Play', _0: a};
 };
 
-var _user$project$Persistence$fromModel = function (model) {
-	return A2(
-		_user$project$Types$PortModel,
-		_user$project$Types$squareStateToString(model.next),
-		A2(_elm_lang$core$Array$map, _user$project$Types$squareStateToString, model.spaces));
+var _user$project$Converters$squareStateFromString = function (state) {
+	var _p0 = state;
+	switch (_p0) {
+		case 'X':
+			return _user$project$Types$X;
+		case 'O':
+			return _user$project$Types$O;
+		default:
+			return _user$project$Types$Empty;
+	}
 };
-var _user$project$Persistence$toModel = function (portModel) {
+var _user$project$Converters$squareStateToString = function (state) {
+	var _p1 = state;
+	switch (_p1.ctor) {
+		case 'X':
+			return 'X';
+		case 'O':
+			return 'O';
+		default:
+			return '';
+	}
+};
+var _user$project$Converters$toPortableGameState = function (gameState) {
+	return A2(
+		_user$project$Types$PortableGameState,
+		_user$project$Converters$squareStateToString(gameState.next),
+		A2(_elm_lang$core$Array$map, _user$project$Converters$squareStateToString, gameState.spaces));
+};
+var _user$project$Converters$toGameState = function (portableGameState) {
+	return A2(
+		_user$project$Types$GameState,
+		_user$project$Converters$squareStateFromString(portableGameState.next),
+		A2(_elm_lang$core$Array$map, _user$project$Converters$squareStateFromString, portableGameState.spaces));
+};
+var _user$project$Converters$fromModel = function (model) {
+	return A2(
+		_user$project$Types$PortableModel,
+		_user$project$Converters$toPortableGameState(model.currentGameState),
+		A2(_elm_lang$core$List$map, _user$project$Converters$toPortableGameState, model.history));
+};
+var _user$project$Converters$toModel = function (portableModel) {
 	return A2(
 		_user$project$Types$Model,
-		_user$project$Types$squareStateFromString(portModel.next),
-		A2(_elm_lang$core$Array$map, _user$project$Types$squareStateFromString, portModel.spaces));
+		_user$project$Converters$toGameState(portableModel.currentGameState),
+		A2(_elm_lang$core$List$map, _user$project$Converters$toGameState, portableModel.history));
 };
+
 var _user$project$Persistence$updateData = _elm_lang$core$Native_Platform.outgoingPort(
 	'updateData',
 	function (v) {
 		return {
-			next: v.next,
-			spaces: _elm_lang$core$Native_Array.toJSArray(v.spaces).map(
+			currentGameState: {
+				next: v.currentGameState.next,
+				spaces: _elm_lang$core$Native_Array.toJSArray(v.currentGameState.spaces).map(
+					function (v) {
+						return v;
+					})
+			},
+			history: _elm_lang$core$Native_List.toArray(v.history).map(
 				function (v) {
-					return v;
+					return {
+						next: v.next,
+						spaces: _elm_lang$core$Native_Array.toJSArray(v.spaces).map(
+							function (v) {
+								return v;
+							})
+					};
 				})
 		};
 	});
 var _user$project$Persistence$save = function (model) {
 	return _user$project$Persistence$updateData(
-		_user$project$Persistence$fromModel(model));
+		_user$project$Converters$fromModel(model));
 };
 var _user$project$Persistence$newModel = _elm_lang$core$Native_Platform.incomingPort(
 	'newModel',
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (next) {
+		function (currentGameState) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (spaces) {
+				function (history) {
 					return _elm_lang$core$Json_Decode$succeed(
-						{next: next, spaces: spaces});
+						{currentGameState: currentGameState, history: history});
 				},
 				A2(
 					_elm_lang$core$Json_Decode$field,
-					'spaces',
-					_elm_lang$core$Json_Decode$array(_elm_lang$core$Json_Decode$string)));
+					'history',
+					_elm_lang$core$Json_Decode$list(
+						A2(
+							_elm_lang$core$Json_Decode$andThen,
+							function (next) {
+								return A2(
+									_elm_lang$core$Json_Decode$andThen,
+									function (spaces) {
+										return _elm_lang$core$Json_Decode$succeed(
+											{next: next, spaces: spaces});
+									},
+									A2(
+										_elm_lang$core$Json_Decode$field,
+										'spaces',
+										_elm_lang$core$Json_Decode$array(_elm_lang$core$Json_Decode$string)));
+							},
+							A2(_elm_lang$core$Json_Decode$field, 'next', _elm_lang$core$Json_Decode$string)))));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'next', _elm_lang$core$Json_Decode$string)));
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'currentGameState',
+			A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (next) {
+					return A2(
+						_elm_lang$core$Json_Decode$andThen,
+						function (spaces) {
+							return _elm_lang$core$Json_Decode$succeed(
+								{next: next, spaces: spaces});
+						},
+						A2(
+							_elm_lang$core$Json_Decode$field,
+							'spaces',
+							_elm_lang$core$Json_Decode$array(_elm_lang$core$Json_Decode$string)));
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'next', _elm_lang$core$Json_Decode$string)))));
 var _user$project$Persistence$onNewModel = _user$project$Persistence$newModel;
 
 var _user$project$State$nextPlay = function (currentPlay) {
@@ -8351,6 +8416,20 @@ var _user$project$State$nextPlay = function (currentPlay) {
 		return _user$project$Types$X;
 	}
 };
+var _user$project$State$updateGameState = F2(
+	function (msg, gameState) {
+		var _p1 = msg;
+		if (_p1.ctor === 'Play') {
+			return _elm_lang$core$Native_Utils.update(
+				gameState,
+				{
+					spaces: A3(_elm_lang$core$Array$set, _p1._0, gameState.next, gameState.spaces),
+					next: _user$project$State$nextPlay(gameState.next)
+				});
+		} else {
+			return gameState;
+		}
+	});
 var _user$project$State$subscriptions = function (model) {
 	return _user$project$Persistence$onNewModel(_user$project$Types$Update);
 };
@@ -8358,7 +8437,11 @@ var _user$project$State$emptyBoard = {
 	next: _user$project$Types$X,
 	spaces: A2(_elm_lang$core$Array$repeat, 9, _user$project$Types$Empty)
 };
-var _user$project$State$initialize = {ctor: '_Tuple2', _0: _user$project$State$emptyBoard, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$State$initialModel = {
+	currentGameState: _user$project$State$emptyBoard,
+	history: {ctor: '[]'}
+};
+var _user$project$State$initialize = {ctor: '_Tuple2', _0: _user$project$State$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$State$persist = function (model) {
 	return {
 		ctor: '_Tuple2',
@@ -8368,24 +8451,23 @@ var _user$project$State$persist = function (model) {
 };
 var _user$project$State$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'Play':
 				return _user$project$State$persist(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							spaces: A3(_elm_lang$core$Array$set, _p1._0, model.next, model.spaces),
-							next: _user$project$State$nextPlay(model.next)
+							currentGameState: A2(_user$project$State$updateGameState, msg, model.currentGameState)
 						}));
 			case 'Update':
 				return {
 					ctor: '_Tuple2',
-					_0: _user$project$Persistence$toModel(_p1._0),
+					_0: _user$project$Converters$toModel(_p2._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				return _user$project$State$persist(_user$project$State$emptyBoard);
+				return _user$project$State$persist(_user$project$State$initialModel);
 		}
 	});
 
@@ -8406,7 +8488,7 @@ var _user$project$View$squareElement = F2(
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html$text(
-					_user$project$Types$squareStateToString(squareState)),
+					_user$project$Converters$squareStateToString(squareState)),
 				_1: {ctor: '[]'}
 			});
 	});
@@ -8427,7 +8509,7 @@ var _user$project$View$view = function (model) {
 					_0: _elm_lang$html$Html_Attributes$class('board'),
 					_1: {ctor: '[]'}
 				},
-				_user$project$View$row(model.spaces)),
+				_user$project$View$row(model.currentGameState.spaces)),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -8451,6 +8533,10 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$State$initialize, update: _user$project$State$update, subscriptions: _user$project$State$subscriptions, view: _user$project$View$view})();
 
 var Elm = {};
+Elm['Converters'] = Elm['Converters'] || {};
+if (typeof _user$project$Converters$main !== 'undefined') {
+    _user$project$Converters$main(Elm['Converters'], 'Converters', undefined);
+}
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
     _user$project$Main$main(Elm['Main'], 'Main', undefined);

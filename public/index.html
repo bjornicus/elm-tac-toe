@@ -46,7 +46,7 @@
     });
     
     var database = firebase.database();
-    contentRef = database.ref('scratch').child('abcd');
+    contentRef = database.ref('scratch').child('efgh');
 
     app.ports.updateData.subscribe(function(data) {
         contentRef.set(data);

@@ -3,51 +3,37 @@ module Types exposing (..)
 import Array
 
 
-squareStateToString : SquareState -> String
-squareStateToString state =
-    case state of
-        X ->
-            "X"
-
-        O ->
-            "O"
-
-        Empty ->
-            ""
-
-
-squareStateFromString : String -> SquareState
-squareStateFromString state =
-    case state of
-        "X" ->
-            X
-
-        "O" ->
-            O
-
-        _ ->
-            Empty
-
-
 type SquareState
     = X
     | O
     | Empty
 
 
-type alias Model =
+type alias GameState =
     { next : SquareState
     , spaces : Array.Array SquareState
     }
 
 
-type alias PortModel =
+type alias PortableGameState =
     { next : String
     , spaces : Array.Array String
     }
 
 
+type alias Model =
+    { currentGameState : GameState
+    , history : List GameState
+    }
+
+
+type alias PortableModel =
+    { currentGameState : PortableGameState
+    , history : List PortableGameState
+    }
+
+
 type Msg
     = Play Int
-    | Update PortModel
+    | Update PortableModel
     | Reset

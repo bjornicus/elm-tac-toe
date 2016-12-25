@@ -3,6 +3,7 @@ module State exposing (update, initialize, subscriptions)
 import Array exposing (Array)
 import Types exposing (..)
 import Persistence
+import Converters
 
 
 persist : Model -> ( Model, Cmd msg )
@@ -14,14 +15,19 @@ persist model =
 --INITIALIZE
 
 
-emptyBoard : Model
+emptyBoard : GameState
 emptyBoard =
     { next = X, spaces = Array.repeat 9 Empty }
 
 
+initialModel : Model
+initialModel =
+    { currentGameState = emptyBoard, history = [] }
+
+
 initialize : ( Model, Cmd msg )
 initialize =
-    ( emptyBoard, Cmd.none )
+    ( initialModel, Cmd.none )
 
 
 
@@ -47,14 +53,24 @@ nextPlay currentPlay =
             X
 
 
+updateGameState : Msg -> GameState -> GameState
+updateGameState msg gameState =
+    case msg of
+        Play index ->
+            { gameState | spaces = Array.set index gameState.next gameState.spaces, next = nextPlay gameState.next }
+
+        _ ->
+            gameState
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Play index ->
-            persist { model | spaces = Array.set index model.next model.spaces, next = nextPlay model.next }
+            persist { model | currentGameState = updateGameState msg model.currentGameState }
 
         Update newModel ->
-            ( Persistence.toModel newModel, Cmd.none )
+            ( Converters.toModel newModel, Cmd.none )
 
         Reset ->
-            persist emptyBoard
+            persist initialModel
