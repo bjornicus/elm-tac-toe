@@ -30,4 +30,6 @@ view model =
         , div [ class "board" ] <| row model.currentGameState.spaces
         , button [ onClick (Reset) ] [ text "reset" ]
         , button [ onClick (Undo) ] [ text "undo" ]
+        , br [] []
+        , text <| "Next move: " ++ Basics.toString model.currentGameState.next
         ]

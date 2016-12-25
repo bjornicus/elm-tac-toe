@@ -8624,7 +8624,22 @@ var _user$project$View$view = function (model) {
 									_0: _elm_lang$html$Html$text('undo'),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$br,
+									{ctor: '[]'},
+									{ctor: '[]'}),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Next move: ',
+											_elm_lang$core$Basics$toString(model.currentGameState.next))),
+									_1: {ctor: '[]'}
+								}
+							}
 						}
 					}
 				}
