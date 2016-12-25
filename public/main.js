@@ -8473,13 +8473,18 @@ var _user$project$State$update = F2(
 		var _p4 = msg;
 		switch (_p4.ctor) {
 			case 'Play':
-				return _user$project$State$persist(
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							currentGameState: A2(_user$project$State$updateGameState, msg, model.currentGameState),
-							history: {ctor: '::', _0: model.currentGameState, _1: model.history}
-						}));
+				var _p5 = A2(_elm_lang$core$Array$get, _p4._0, model.currentGameState.spaces);
+				if ((_p5.ctor === 'Just') && (_p5._0.ctor === 'Empty')) {
+					return _user$project$State$persist(
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								currentGameState: A2(_user$project$State$updateGameState, msg, model.currentGameState),
+								history: {ctor: '::', _0: model.currentGameState, _1: model.history}
+							}));
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'Update':
 				return {
 					ctor: '_Tuple2',

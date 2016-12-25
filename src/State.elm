@@ -95,11 +95,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Play index ->
-            persist
-                { model
-                    | currentGameState = updateGameState msg model.currentGameState
-                    , history = model.currentGameState :: model.history
-                }
+            case (Array.get index model.currentGameState.spaces) of
+                Just Empty ->
+                    persist
+                        { model
+                            | currentGameState = updateGameState msg model.currentGameState
+                            , history = model.currentGameState :: model.history
+                        }
+
+                _ ->
+                    ( model, Cmd.none )
 
         Update newModel ->
             ( Converters.toModel newModel, Cmd.none )
