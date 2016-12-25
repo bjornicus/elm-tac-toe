@@ -46,12 +46,18 @@
     });
     
     var database = firebase.database();
-    contentRef = database.ref('scratch').child('efgh');
 
-    app.ports.updateData.subscribe(function(data) {
-        contentRef.set(data);
+    console.log("Here I am!")
+
+    app.ports.joinGame.subscribe(function(gameCode) {
+        console.log('code: ' + gameCode)
+        var contentRef = database.ref('elm-tac-toe').child(gameCode);
+
+        app.ports.updateData.subscribe(function(data) {
+            contentRef.set(data);
+        });
+        contentRef.on('value', s => app.ports.newModel.send(s.val()));
     });
-    contentRef.on('value', s => app.ports.newModel.send(s.val()));
 
 </script>
 

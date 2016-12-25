@@ -8521,7 +8521,11 @@ var _user$project$State$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Persistence$joinGame(model.roomCode)
+				};
 		}
 	});
 

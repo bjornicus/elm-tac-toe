@@ -1,4 +1,4 @@
-port module Persistence exposing (save, onNewModel)
+port module Persistence exposing (save, onNewModel, joinGame)
 
 import Types exposing (..)
 import Converters exposing (fromModel)

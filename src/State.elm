@@ -123,4 +123,4 @@ update msg model =
             ( { model | roomCode = code }, Cmd.none )
 
         JoinGame ->
-            ( model, Cmd.none )
+            ( model, Persistence.joinGame model.roomCode )
