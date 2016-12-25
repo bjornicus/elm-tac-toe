@@ -63,14 +63,53 @@ updateGameState msg gameState =
             gameState
 
 
+previousState : List GameState -> GameState
+previousState history =
+    let
+        previousState =
+            List.head history
+    in
+        case previousState of
+            Just state ->
+                state
+
+            Nothing ->
+                emptyBoard
+
+
+previousHistory : List GameState -> List GameState
+previousHistory history =
+    let
+        previousHistory =
+            List.tail history
+    in
+        case previousHistory of
+            Just remainingHistory ->
+                remainingHistory
+
+            Nothing ->
+                []
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Play index ->
-            persist { model | currentGameState = updateGameState msg model.currentGameState }
+            persist
+                { model
+                    | currentGameState = updateGameState msg model.currentGameState
+                    , history = model.currentGameState :: model.history
+                }
 
         Update newModel ->
             ( Converters.toModel newModel, Cmd.none )
 
         Reset ->
             persist initialModel
+
+        Undo ->
+            persist
+                { model
+                    | currentGameState = previousState model.history
+                    , history = previousHistory model.history
+                }

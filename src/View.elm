@@ -27,4 +27,5 @@ view model =
     div []
         [ div [ class "board" ] <| row model.currentGameState.spaces
         , button [ onClick (Reset) ] [ text "reset" ]
+        , button [ onClick (Undo) ] [ text "undo" ]
         ]

@@ -8275,6 +8275,7 @@ var _user$project$Types$PortableModel = F2(
 var _user$project$Types$Empty = {ctor: 'Empty'};
 var _user$project$Types$O = {ctor: 'O'};
 var _user$project$Types$X = {ctor: 'X'};
+var _user$project$Types$Undo = {ctor: 'Undo'};
 var _user$project$Types$Reset = {ctor: 'Reset'};
 var _user$project$Types$Update = function (a) {
 	return {ctor: 'Update', _0: a};
@@ -8408,9 +8409,18 @@ var _user$project$Persistence$newModel = _elm_lang$core$Native_Platform.incoming
 				A2(_elm_lang$core$Json_Decode$field, 'next', _elm_lang$core$Json_Decode$string)))));
 var _user$project$Persistence$onNewModel = _user$project$Persistence$newModel;
 
+var _user$project$State$previousHistory = function (history) {
+	var previousHistory = _elm_lang$core$List$tail(history);
+	var _p0 = previousHistory;
+	if (_p0.ctor === 'Just') {
+		return _p0._0;
+	} else {
+		return {ctor: '[]'};
+	}
+};
 var _user$project$State$nextPlay = function (currentPlay) {
-	var _p0 = currentPlay;
-	if (_p0.ctor === 'X') {
+	var _p1 = currentPlay;
+	if (_p1.ctor === 'X') {
 		return _user$project$Types$O;
 	} else {
 		return _user$project$Types$X;
@@ -8418,12 +8428,12 @@ var _user$project$State$nextPlay = function (currentPlay) {
 };
 var _user$project$State$updateGameState = F2(
 	function (msg, gameState) {
-		var _p1 = msg;
-		if (_p1.ctor === 'Play') {
+		var _p2 = msg;
+		if (_p2.ctor === 'Play') {
 			return _elm_lang$core$Native_Utils.update(
 				gameState,
 				{
-					spaces: A3(_elm_lang$core$Array$set, _p1._0, gameState.next, gameState.spaces),
+					spaces: A3(_elm_lang$core$Array$set, _p2._0, gameState.next, gameState.spaces),
 					next: _user$project$State$nextPlay(gameState.next)
 				});
 		} else {
@@ -8442,6 +8452,15 @@ var _user$project$State$initialModel = {
 	history: {ctor: '[]'}
 };
 var _user$project$State$initialize = {ctor: '_Tuple2', _0: _user$project$State$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$State$previousState = function (history) {
+	var previousState = _elm_lang$core$List$head(history);
+	var _p3 = previousState;
+	if (_p3.ctor === 'Just') {
+		return _p3._0;
+	} else {
+		return _user$project$State$emptyBoard;
+	}
+};
 var _user$project$State$persist = function (model) {
 	return {
 		ctor: '_Tuple2',
@@ -8451,23 +8470,32 @@ var _user$project$State$persist = function (model) {
 };
 var _user$project$State$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'Play':
 				return _user$project$State$persist(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							currentGameState: A2(_user$project$State$updateGameState, msg, model.currentGameState)
+							currentGameState: A2(_user$project$State$updateGameState, msg, model.currentGameState),
+							history: {ctor: '::', _0: model.currentGameState, _1: model.history}
 						}));
 			case 'Update':
 				return {
 					ctor: '_Tuple2',
-					_0: _user$project$Converters$toModel(_p2._0),
+					_0: _user$project$Converters$toModel(_p4._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'Reset':
 				return _user$project$State$persist(_user$project$State$initialModel);
+			default:
+				return _user$project$State$persist(
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							currentGameState: _user$project$State$previousState(model.history),
+							history: _user$project$State$previousHistory(model.history)
+						}));
 		}
 	});
 
@@ -8524,7 +8552,22 @@ var _user$project$View$view = function (model) {
 						_0: _elm_lang$html$Html$text('reset'),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Undo),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('undo'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

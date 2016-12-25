@@ -37,3 +37,4 @@ type Msg
     = Play Int
     | Update PortableModel
     | Reset
+    | Undo
